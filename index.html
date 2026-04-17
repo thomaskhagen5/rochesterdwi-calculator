@@ -1,1 +1,978 @@
-<!-- Add your HTML content here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription Drug DWI Calculator</title>
+    <style>
+        :root {
+            --brand-primary: #981e25;
+            --brand-alternate: #121212;
+            --brand-hover: #7a181d;
+            --text-heading: #121212;
+            --text-body: #4a4a4a;
+            --text-light: #6b7280;
+            --text-inverse: #ffffff;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f2f2f2;
+            --bg-dark: #121212;
+            --risk-low: #22c55e;
+            --risk-moderate: #f59e0b;
+            --risk-high: #ef4444;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            color: var(--text-body);
+            background: var(--bg-secondary);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 64px;
+            background: var(--bg-dark);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .header-logo {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-logo-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+        }
+
+        .header-logo-sub {
+            font-size: 11px;
+            color: rgba(255,255,255,0.55);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .header-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--brand-primary);
+            color: #ffffff;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            transition: background 150ms ease, transform 150ms ease;
+            text-decoration: none;
+            min-height: 44px;
+            white-space: nowrap;
+            border: none;
+            cursor: pointer;
+        }
+
+        .header-cta:hover {
+            background: var(--brand-hover);
+            transform: translateY(-1px);
+            text-decoration: none;
+        }
+
+        .app-wrapper {
+            padding-top: 64px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            display: flex;
+            flex: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 32px 32px;
+            background: var(--bg-secondary);
+        }
+
+        .progress-container {
+            margin-bottom: 32px;
+            display: none;
+        }
+
+        .progress-container.visible {
+            display: block;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .progress-step {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--brand-primary);
+        }
+
+        .progress-bar-track {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--brand-primary);
+            border-radius: 99px;
+            transition: width 500ms cubic-bezier(0.4, 0, 0.2, 1);
+            width: 0%;
+        }
+
+        .stage-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stage {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateX(40px);
+            pointer-events: none;
+            transition: opacity 400ms ease, transform 400ms ease;
+        }
+
+        .stage.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+            position: relative;
+        }
+
+        .stage-question-wrap {
+            margin-bottom: 32px;
+        }
+
+        .stage-eyebrow {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--brand-primary);
+            margin-bottom: 8px;
+        }
+
+        .stage-question {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-heading);
+            line-height: 1.25;
+            margin-bottom: 8px;
+        }
+
+        .stage-subtitle {
+            font-size: 16px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .card-grid.grid-2col {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: 768px) {
+            .card-grid.grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .answer-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 24px 24px;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            min-height: 80px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 150ms ease, background 150ms ease, transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 150ms ease;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            font-family: inherit;
+            font-size: 16px;
+        }
+
+        .answer-card:hover:not(:disabled) {
+            border-color: var(--brand-primary);
+            background: #f9f9f9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(152,30,37,0.15);
+        }
+
+        .answer-card:active:not(:disabled) {
+            transform: scale(0.98) translateY(0);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .answer-card.selected {
+            border-color: var(--brand-primary);
+            background: #fff5f5;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(152,30,37,0.15);
+        }
+
+        .answer-card:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .answer-card:focus-visible {
+            outline: 3px solid var(--brand-primary);
+            outline-offset: 2px;
+        }
+
+        .card-icon {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            transition: background 150ms ease, transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .answer-card:hover .card-icon {
+            background: rgba(152,30,37,0.08);
+            transform: scale(1.08);
+        }
+
+        .answer-card.selected .card-icon {
+            background: rgba(152,30,37,0.12);
+        }
+
+        .card-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .card-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-heading);
+            line-height: 1.25;
+            margin-bottom: 3px;
+            transition: color 150ms ease;
+        }
+
+        .card-sublabel {
+            display: block;
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.35;
+        }
+
+        .card-check {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #e0e0e0;
+            background: transparent;
+            transition: border-color 150ms ease, background 150ms ease, transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+
+        .card-check::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: var(--brand-primary);
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0);
+            transition: opacity 150ms ease, transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .answer-card.selected .card-check {
+            border-color: var(--brand-primary);
+            transform: scale(1.1);
+        }
+
+        .answer-card.selected .card-check::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .results {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin: 32px 0;
+            animation: fadeInUp 500ms ease both;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--brand-primary);
+            background: rgba(152,30,37,0.15);
+            padding: 4px 12px;
+            border-radius: 99px;
+            margin-bottom: 16px;
+        }
+
+        .results h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .results p {
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid #ef4444;
+            border-radius: 0 8px 8px 0;
+            padding: 16px 24px;
+            margin: 24px 0;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+
+        .next-steps {
+            list-style: none;
+            padding: 0;
+            margin: 24px 0;
+        }
+
+        .next-steps li {
+            margin-bottom: 12px;
+            padding-left: 20px;
+        }
+
+        .next-steps li::before {
+            content: '•';
+            margin-right: 12px;
+            color: var(--brand-primary);
+            font-weight: 700;
+        }
+
+        .form-section {
+            margin: 32px 0;
+            padding: 24px;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .form-section h3 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .form-section p {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 24px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            color: var(--text-heading);
+            margin-bottom: 16px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 150ms ease;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--brand-primary);
+            background: #fafafa;
+            box-shadow: 0 0 0 3px rgba(152, 30, 37, 0.1);
+        }
+
+        .btn {
+            background: var(--brand-primary);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            text-decoration: none;
+            min-height: 56px;
+            transition: all 150ms ease;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: var(--brand-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(152,30,37,0.4);
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: rgba(255,255,255,0.85);
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.5);
+            color: white;
+            box-shadow: none;
+        }
+
+        .legal-disclaimer {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 16px 24px;
+            font-size: 12px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .app-footer {
+            background: var(--bg-dark);
+            color: rgba(255,255,255,0.6);
+            padding: 32px 24px;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 24px 16px;
+            }
+
+            .stage-question {
+                font-size: 20px;
+            }
+
+            .results {
+                padding: 24px 16px;
+            }
+
+            .form-section {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-logo-sub {
+                display: none;
+            }
+
+            .header-cta {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .main-content {
+                padding: 16px 12px;
+            }
+
+            .stage-question {
+                font-size: 18px;
+            }
+
+            .results {
+                padding: 16px 12px;
+            }
+
+            .btn {
+                font-size: 14px;
+                padding: 16px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="app-header">
+    <div class="header-inner">
+        <div class="header-logo">
+            <span class="header-logo-name">Rx DWI Analysis</span>
+            <span class="header-logo-sub">Rochester DWI Law</span>
+        </div>
+        <a href="tel:5076255000" class="header-cta" aria-label="Call us at 507-625-5000">
+            <span aria-hidden="true">📞</span>
+            <span>507-625-5000</span>
+        </a>
+    </div>
+</header>
+
+<div class="app-wrapper">
+    <div class="app-container">
+        <main class="main-content" id="main-content" role="main">
+            <div class="progress-container" id="progress-container" aria-label="Progress indicator">
+                <div class="progress-header">
+                    <span class="progress-label">Building your assessment</span>
+                    <span class="progress-step" id="progress-step" aria-live="polite">Step 1 of 13</span>
+                </div>
+                <div class="progress-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar-fill" id="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="stage-container" id="stage-container" aria-live="polite">
+                <!-- Stages injected here by JavaScript -->
+            </div>
+        </main>
+    </div>
+</div>
+
+<footer class="app-footer" role="contentinfo">
+    <div class="footer-links">
+        <a href="https://khmnlaw.com" target="_blank" rel="noopener">K&H Minnesota Law</a>
+        <a href="https://khmnlaw.com/contact-us/" target="_blank" rel="noopener">Contact Us</a>
+        <a href="tel:5076255000">507-625-5000</a>
+        <a href="mailto:intake@khmnlaw.com">intake@khmnlaw.com</a>
+    </div>
+    <p>&copy; 2026 K&H Minnesota Law. All rights reserved.</p>
+    <p>This tool provides educational information only and does not constitute legal advice.</p>
+</footer>
+
+<script>
+    // Questions Data
+    const QUESTIONS = [
+        {
+            id: 'q1',
+            stage: 1,
+            headline: 'Why were you stopped?',
+            options: [
+                { text: 'I don\'t think I did anything wrong', score: 2, icon: '🚨' },
+                { text: 'Lane drift, speeding, or rolling stop', score: 0, icon: '🚗' },
+                { text: 'Accident or reckless driving', score: 0, icon: '⚠️' },
+                { text: 'I\'m not sure / they didn\'t explain', score: 0, icon: '❓' }
+            ]
+        },
+        {
+            id: 'q2',
+            stage: 2,
+            headline: 'Who pulled you over?',
+            options: [
+                { text: 'MN State Patrol', score: 0, icon: '🚔' },
+                { text: 'Rochester Police Department', score: 0, icon: '👮' },
+                { text: 'Olmsted County Sheriff', score: 0, icon: '🛡️' },
+                { text: 'Local Police', score: 0, icon: '🚓' },
+                { text: 'Outside Olmsted County', score: 0, icon: '🗺️' },
+                { text: 'I don\'t remember', score: 0, icon: '🤔' }
+            ]
+        },
+        {
+            id: 'q3',
+            stage: 3,
+            headline: 'Medication type?',
+            options: [
+                { text: 'Sleep aids (Ambien, Lunesta)', score: 0, icon: '😴' },
+                { text: 'Stimulants (Adderall, Vyvanse)', score: 0, icon: '⚡' },
+                { text: 'Painkillers (Oxycodone, Vicodin)', score: 0, icon: '💊' },
+                { text: 'Cannabis / other', score: 0, icon: '🌿' }
+            ]
+        },
+        {
+            id: 'q4',
+            stage: 4,
+            headline: 'Valid prescription?',
+            options: [
+                { text: 'Yes', score: 2, icon: '✓' },
+                { text: 'No', score: -3, icon: '✗' }
+            ]
+        },
+        {
+            id: 'q5',
+            stage: 5,
+            headline: 'Taken as prescribed?',
+            options: [
+                { text: 'Yes', score: 2, icon: '✓' },
+                { text: 'No', score: -3, icon: '✗' }
+            ]
+        },
+        {
+            id: 'q6',
+            stage: 6,
+            headline: 'Warned not to drive?',
+            options: [
+                { text: 'No', score: 2, icon: '✓' },
+                { text: 'Yes', score: 0, icon: '⚠️' },
+                { text: 'Not sure', score: 0, icon: '❓' }
+            ]
+        },
+        {
+            id: 'q7',
+            stage: 7,
+            headline: 'Field sobriety tests?',
+            options: [
+                { text: 'Yes, completed them', score: 0, icon: '🚶' },
+                { text: 'Attempted but struggled', score: 0, icon: '😓' },
+                { text: 'Refused', score: 0, icon: '🚫' },
+                { text: 'Don\'t remember', score: 0, icon: '❓' }
+            ]
+        },
+        {
+            id: 'q8',
+            stage: 8,
+            headline: 'Alcohol involved?',
+            options: [
+                { text: 'No alcohol', score: 0, icon: '✓' },
+                { text: 'Yes, some alcohol', score: -3, icon: '🍷' },
+                { text: 'Not sure', score: 0, icon: '❓' }
+            ]
+        },
+        {
+            id: 'q9',
+            stage: 9,
+            headline: 'Chemical test?',
+            options: [
+                { text: 'Breath test', score: 1, icon: '💨' },
+                { text: 'Blood test', score: 1, icon: '🩸' },
+                { text: 'Urine test', score: 1, icon: '🧪' },
+                { text: 'Refused', score: 0, icon: '🚫' },
+                { text: 'Not sure', score: 0, icon: '❓' }
+            ]
+        },
+        {
+            id: 'q10',
+            stage: 10,
+            headline: 'Driving record?',
+            options: [
+                { text: 'Clean record', score: 0, icon: '✓' },
+                { text: 'Prior within 10 years', score: 0, icon: '⚠️' },
+                { text: 'Prior outside 10 years', score: 0, icon: '📅' },
+                { text: 'Not sure', score: 0, icon: '❓' }
+            ]
+        },
+        {
+            id: 'q11',
+            stage: 11,
+            headline: 'Vehicle status?',
+            options: [
+                { text: 'Towed to impound', score: 0, icon: '🚗' },
+                { text: 'Plates taken (Whiskey Plates)', score: 0, icon: '🚫' },
+                { text: 'Someone drove it home', score: 0, icon: '🚗' }
+            ]
+        },
+        {
+            id: 'q12',
+            stage: 12,
+            headline: 'License notice timing?',
+            options: [
+                { text: 'Less than 30 days', score: 0, icon: '🚨' },
+                { text: '30–60 days', score: 0, icon: '⏰' },
+                { text: 'More than 60 days', score: -3, icon: '❌' },
+                { text: 'Not sure', score: 0, icon: '❓' }
+            ]
+        },
+        {
+            id: 'q13',
+            stage: 13,
+            headline: 'Professional risk?',
+            options: [
+                { text: 'Healthcare (Mayo Clinic, Nurse, Doctor)', score: 0, icon: '⚕️' },
+                { text: 'CDL / Commercial Driver', score: 0, icon: '🚛' },
+                { text: 'Government / Teacher', score: 0, icon: '👨‍🏫' },
+                { text: 'None', score: 0, icon: '✓' }
+            ]
+        }
+    ];
+
+    // State
+    let currentStep = 0;
+    let score = 0;
+    let responses = {};
+
+    // Calculate Risk Level
+    function calculateRiskLevel(score) {
+        if (score >= 5) return { emoji: '🟢', label: 'The Affirmative Defense Track', class: 'badge-green' };
+        if (score >= 2) return { emoji: '🟡', label: 'Defenses Available – Strategic Action Required', class: 'badge-yellow' };
+        return { emoji: '🔴', label: 'High Legal Risk – Immediate Action Required', class: 'badge-red' };
+    }
+
+    // Render Start Screen
+    function renderStartScreen() {
+        const container = document.getElementById('stage-container');
+        container.innerHTML = `
+            <div class="stage stage-entry active">
+                <div class="stage-question-wrap">
+                    <h1 class="stage-question" style="text-align: center; font-size: 28px;">I was arrested for a DWI, but I was taking my own prescription. Do I have a defense?</h1>
+                    <p class="stage-subtitle" style="text-align: center;">Find out in 60 seconds if you have a legal defense under Minnesota law.</p>
+                </div>
+                <div class="card-grid grid-2col">
+                    <button class="answer-card" onclick="startQuiz()" style="grid-column: 1 / -1; margin: 0 auto; max-width: 400px;">
+                        <div class="card-icon">🚀</div>
+                        <div class="card-text">
+                            <span class="card-label">Start Free Case Analysis</span>
+                        </div>
+                        <div class="card-check"></div>
+                    </button>
+                </div>
+            </div>
+        `;
+        document.getElementById('progress-container').classList.remove('visible');
+    }
+
+    // Start Quiz
+    function startQuiz() {
+        currentStep = 1;
+        renderQuestion();
+    }
+
+    // Render Question
+    function renderQuestion() {
+        const question = QUESTIONS[currentStep - 1];
+        const progressPercent = (currentStep / 13) * 100;
+
+        document.getElementById('progress-fill').style.width = progressPercent + '%';
+        document.getElementById('progress-step').textContent = `Step ${currentStep} of 13`;
+
+        let html = `
+            <div class="stage active">
+                <div class="stage-question-wrap">
+                    <span class="stage-eyebrow">Question ${currentStep} of 13</span>
+                    <h2 class="stage-question">${question.headline}</h2>
+                </div>
+                <div class="card-grid">
+        `;
+
+        question.options.forEach((option, index) => {
+            html += `
+                <button class="answer-card" onclick="selectOption(${currentStep - 1}, ${index}, ${option.score})">
+                    <div class="card-icon">${option.icon}</div>
+                    <div class="card-text">
+                        <span class="card-label">${option.text}</span>
+                    </div>
+                    <div class="card-check"></div>
+                </button>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>
+        `;
+
+        const container = document.getElementById('stage-container');
+        container.innerHTML = html;
+
+        document.getElementById('progress-container').classList.add('visible');
+    }
+
+    // Select Option
+    function selectOption(questionIndex, optionIndex, scoreAdjustment) {
+        const question = QUESTIONS[questionIndex];
+        const option = question.options[optionIndex];
+
+        score += scoreAdjustment;
+        responses[question.id] = option.text;
+
+        // Disable buttons
+        document.querySelectorAll('.answer-card').forEach(btn => btn.disabled = true);
+
+        setTimeout(() => {
+            if (currentStep < 13) {
+                currentStep++;
+                renderQuestion();
+            } else {
+                renderResults();
+            }
+        }, 500);
+    }
+
+    // Render Results
+    function renderResults() {
+        const riskInfo = calculateRiskLevel(score);
+
+        document.getElementById('progress-fill').style.width = '100%';
+        document.getElementById('progress-step').textContent = 'Complete';
+
+        const resultsHTML = `
+            <div class="results">
+                <div class="results-badge">${riskInfo.emoji} ${riskInfo.label}</div>
+                
+                <h2>Your Case Analysis Outcome</h2>
+                
+                <p>Based on your responses, your case involves highly specific procedural and medical defenses under Minnesota law.</p>
+                
+                <p>Prescription-related DWI cases in Olmsted County are not decided by a number. Unlike alcohol, there is no "legal limit" for most medications.</p>
+
+                <div class="warning-box">
+                    Most people assume these cases are straightforward. They are not.
+                </div>
+
+                <h3 style="font-weight: 700; margin: 24px 0 16px 0;">What Happens Next:</h3>
+                <ul class="next-steps">
+                    <li>The strict 60-day license revocation timeline</li>
+                    <li>Criminal charge exposure and impound fees</li>
+                    <li>Long-term auto insurance spikes</li>
+                    <li>Mayo Clinic & Professional board reporting risks</li>
+                </ul>
+
+                <p style="font-weight: 700; font-size: 18px; margin: 32px 0 16px 0;">Your next 48 hours matter more than anything.</p>
+
+                <div class="form-section">
+                    <h3>Get Your Personalized Defense Blueprint</h3>
+                    <p>Receive a custom breakdown of your case track and the exact next steps to protect your license and career.</p>
+                    <form onsubmit="submitForm(event)">
+                        <input type="text" class="form-input" placeholder="Your Name" required>
+                        <input type="email" class="form-input" placeholder="Your Email" required>
+                        <input type="tel" class="form-input" placeholder="Your Phone (optional)">
+                        <button type="submit" class="btn">Get My Defense Blueprint</button>
+                    </form>
+                </div>
+
+                <div style="text-align: center; margin: 24px 0;">
+                    <p style="margin-bottom: 12px; font-weight: 700;">Need a real answer right now?</p>
+                    <a href="tel:507-625-5000" class="btn" style="display: inline-block; width: auto; max-width: 400px; margin: 0 auto;">📞 Call 507-625-5000</a>
+                </div>
+
+                <div class="legal-disclaimer">
+                    <strong>Legal Disclaimer:</strong> This tool provides educational information only and does not constitute legal advice. No attorney-client relationship is created by using this tool. Always consult with a qualified attorney regarding your specific situation.
+                </div>
+            </div>
+        `;
+
+        document.getElementById('stage-container').innerHTML = resultsHTML;
+    }
+
+    // Form Submit
+    function submitForm(event) {
+        event.preventDefault();
+        const form = event.target;
+        form.innerHTML = `
+            <div style="text-align: center; padding: 32px; background: rgba(34, 197, 94, 0.1); border-radius: 12px; border: 2px solid #22c55e;">
+                <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 16px;">✓ Success!</h3>
+                <p style="margin-bottom: 12px; color: #121212;">Your blueprint is on the way.</p>
+                <p style="font-weight: 700; color: #121212; margin-bottom: 16px;">Do not face this alone.</p>
+                <p style="color: #121212;">Call Tom and Peter at <a href="tel:507-625-5000" style="color: var(--brand-primary); font-weight: 700; text-decoration: none;">507-625-5000</a> right now to speak directly with an attorney.</p>
+            </div>
+        `;
+    }
+
+    // Initialize
+    renderStartScreen();
+</script>
+
+</body>
+</html>
