@@ -120,17 +120,145 @@
         }
 
         .app-container {
-            display: flex;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 24px;
             flex: 1;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media (max-width: 1200px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+
+            .journey-panel,
+            .risk-panel {
+                display: none;
+            }
+
+            .journey-mobile,
+            .risk-mobile {
+                display: block;
+            }
+        }
+
+        .journey-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .journey-panel-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--bg-secondary);
+        }
+
+        .journey-panel-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--brand-primary);
+            margin-bottom: 4px;
+        }
+
+        .journey-panel-headline {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-heading);
+        }
+
+        .roadmap {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .roadmap-node {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+            transition: all 150ms ease;
+            cursor: pointer;
+        }
+
+        .roadmap-node.completed {
+            background: rgba(34, 197, 94, 0.15);
+        }
+
+        .roadmap-node.current {
+            background: rgba(152, 30, 37, 0.15);
+            font-weight: 700;
+        }
+
+        .roadmap-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-light);
+            flex-shrink: 0;
+        }
+
+        .roadmap-node.completed .roadmap-dot {
+            background: #22c55e;
+            color: white;
+        }
+
+        .roadmap-node.current .roadmap-dot {
+            background: var(--brand-primary);
+            color: white;
+        }
+
+        .journey-panel-footer {
+            padding-top: 16px;
+            border-top: 2px solid var(--bg-secondary);
+            text-align: center;
+        }
+
+        .journey-call-prompt {
+            font-size: 11px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .journey-call-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--brand-primary);
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 14px;
         }
 
         .main-content {
-            flex: 1;
-            min-width: 0;
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
             display: flex;
             flex-direction: column;
-            padding: 32px 32px;
-            background: var(--bg-secondary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .progress-container {
@@ -150,15 +278,15 @@
         }
 
         .progress-label {
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             color: var(--text-light);
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 1px;
         }
 
         .progress-step {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
             color: var(--brand-primary);
         }
@@ -293,11 +421,6 @@
             cursor: not-allowed;
         }
 
-        .answer-card:focus-visible {
-            outline: 3px solid var(--brand-primary);
-            outline-offset: 2px;
-        }
-
         .card-icon {
             flex-shrink: 0;
             width: 48px;
@@ -331,7 +454,6 @@
             font-weight: 700;
             color: var(--text-heading);
             line-height: 1.25;
-            margin-bottom: 3px;
             transition: color 150ms ease;
         }
 
@@ -374,11 +496,33 @@
             transform: scale(1);
         }
 
+        .microcopy {
+            padding: 16px 20px;
+            background: rgba(152, 30, 37, 0.08);
+            border-left: 4px solid var(--brand-primary);
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0 0 0;
+            font-size: 14px;
+            color: var(--text-heading);
+            line-height: 1.6;
+            animation: slideIn 300ms ease both;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         .results {
             background: white;
-            padding: 32px;
             border-radius: 12px;
-            margin: 32px 0;
+            padding: 32px;
             animation: fadeInUp 500ms ease both;
         }
 
@@ -511,17 +655,62 @@
             text-decoration: none;
         }
 
-        .btn-secondary {
-            background: transparent;
-            color: rgba(255,255,255,0.85);
-            border: 1px solid rgba(255,255,255,0.25);
+        .risk-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(255,255,255,0.5);
-            color: white;
-            box-shadow: none;
+        .risk-panel-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--bg-secondary);
+        }
+
+        .risk-panel-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--brand-primary);
+            margin-bottom: 4px;
+        }
+
+        .risk-panel-headline {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-heading);
+        }
+
+        .risk-level {
+            text-align: center;
+            padding: 16px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .risk-emoji {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .risk-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+
+        .risk-score {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--brand-primary);
+            margin-top: 8px;
         }
 
         .legal-disclaimer {
@@ -531,7 +720,7 @@
             font-size: 12px;
             color: var(--text-light);
             line-height: 1.6;
-            margin-bottom: 32px;
+            margin-top: 32px;
         }
 
         .app-footer {
@@ -541,6 +730,7 @@
             text-align: center;
             font-size: 12px;
             line-height: 1.7;
+            margin-top: auto;
         }
 
         .footer-links {
@@ -559,6 +749,11 @@
 
         .footer-links a:hover {
             color: white;
+        }
+
+        .journey-mobile,
+        .risk-mobile {
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -625,6 +820,21 @@
 
 <div class="app-wrapper">
     <div class="app-container">
+        <aside class="journey-panel" aria-label="Case path roadmap">
+            <div class="journey-panel-header">
+                <div class="journey-panel-title">Your Case Path</div>
+                <div class="journey-panel-headline">Prescription Drug DWI Analysis</div>
+            </div>
+            <nav class="roadmap" id="roadmap" aria-label="DWI journey stages"></nav>
+            <div class="journey-panel-footer">
+                <div class="journey-call-prompt">Questions? Call us now</div>
+                <a href="tel:5076255000" class="journey-call-link" aria-label="Call 507-625-5000">
+                    <span aria-hidden="true">📞</span>
+                    507-625-5000
+                </a>
+            </div>
+        </aside>
+
         <main class="main-content" id="main-content" role="main">
             <div class="progress-container" id="progress-container" aria-label="Progress indicator">
                 <div class="progress-header">
@@ -640,6 +850,18 @@
                 <!-- Stages injected here by JavaScript -->
             </div>
         </main>
+
+        <aside class="risk-panel" id="risk-panel" aria-label="Live risk assessment panel">
+            <div class="risk-panel-header">
+                <div class="risk-panel-title">Live Risk Meter</div>
+                <div class="risk-panel-headline">Your Case Assessment</div>
+            </div>
+            <div class="risk-level" id="risk-level">
+                <span class="risk-emoji" id="risk-emoji">—</span>
+                <div class="risk-label" id="risk-label">Answer questions to assess</div>
+                <div class="risk-score" id="risk-score">—</div>
+            </div>
+        </aside>
     </div>
 </div>
 
@@ -655,17 +877,17 @@
 </footer>
 
 <script>
-    // Questions Data
+    // Questions Data with Micro-Copy
     const QUESTIONS = [
         {
             id: 'q1',
             stage: 1,
             headline: 'Why were you stopped?',
             options: [
-                { text: 'I don\'t think I did anything wrong', score: 2, icon: '🚨' },
-                { text: 'Lane drift, speeding, or rolling stop', score: 0, icon: '🚗' },
-                { text: 'Accident or reckless driving', score: 0, icon: '⚠️' },
-                { text: 'I\'m not sure / they didn\'t explain', score: 0, icon: '❓' }
+                { text: 'I don\'t think I did anything wrong', score: 2, icon: '🚨', microcopy: '✓ A solid legal foundation for challenging the stop itself.' },
+                { text: 'Lane drift, speeding, or rolling stop', score: 0, icon: '🚗', microcopy: 'The officer had probable cause for the stop, but the arrest still might be invalid.' },
+                { text: 'Accident or reckless driving', score: 0, icon: '⚠️', microcopy: 'More serious circumstances, but still defenses available.' },
+                { text: 'I\'m not sure / they didn\'t explain', score: 0, icon: '❓', microcopy: 'We can obtain the dash cam and police reports to clarify.' }
             ]
         },
         {
@@ -673,127 +895,127 @@
             stage: 2,
             headline: 'Who pulled you over?',
             options: [
-                { text: 'MN State Patrol', score: 0, icon: '🚔' },
-                { text: 'Rochester Police Department', score: 0, icon: '👮' },
-                { text: 'Olmsted County Sheriff', score: 0, icon: '🛡️' },
-                { text: 'Local Police', score: 0, icon: '🚓' },
-                { text: 'Outside Olmsted County', score: 0, icon: '🗺️' },
-                { text: 'I don\'t remember', score: 0, icon: '🤔' }
+                { text: 'MN State Patrol', score: 0, icon: '🚔', microcopy: 'Statewide authority, but same legal standards apply.' },
+                { text: 'Rochester Police Department', score: 0, icon: '👮', microcopy: 'Local jurisdiction—we know their procedures well.' },
+                { text: 'Olmsted County Sheriff', score: 0, icon: '🛡️', microcopy: 'County-level enforcement with specific protocols.' },
+                { text: 'Local Police', score: 0, icon: '🚓', microcopy: 'Municipal officers—jurisdiction matters for procedure.' },
+                { text: 'Outside Olmsted County', score: 0, icon: '🗺️', microcopy: 'Different jurisdiction may have different case standards.' },
+                { text: 'I don\'t remember', score: 0, icon: '🤔', microcopy: 'Police records will clarify—no problem.' }
             ]
         },
         {
             id: 'q3',
             stage: 3,
-            headline: 'Medication type?',
+            headline: 'What medication were you taking?',
             options: [
-                { text: 'Sleep aids (Ambien, Lunesta)', score: 0, icon: '😴' },
-                { text: 'Stimulants (Adderall, Vyvanse)', score: 0, icon: '⚡' },
-                { text: 'Painkillers (Oxycodone, Vicodin)', score: 0, icon: '💊' },
-                { text: 'Cannabis / other', score: 0, icon: '🌿' }
+                { text: 'Sleep aids (Ambien, Lunesta)', score: 0, icon: '😴', microcopy: 'Common prescription with clear medical defenses.' },
+                { text: 'Stimulants (Adderall, Vyvanse)', score: 0, icon: '⚡', microcopy: 'Legitimate prescription medications with legal protections.' },
+                { text: 'Painkillers (Oxycodone, Vicodin)', score: 0, icon: '💊', microcopy: 'Strong defense if prescribed and taken as directed.' },
+                { text: 'Cannabis / other', score: 0, icon: '🌿', microcopy: 'Additional complexities—requires specialized analysis.' }
             ]
         },
         {
             id: 'q4',
             stage: 4,
-            headline: 'Valid prescription?',
+            headline: 'Do you have a valid prescription?',
             options: [
-                { text: 'Yes', score: 2, icon: '✓' },
-                { text: 'No', score: -3, icon: '✗' }
+                { text: 'Yes', score: 2, icon: '✓', microcopy: '✓ Foundation of the Affirmative Defense—critical protection.' },
+                { text: 'No', score: -3, icon: '✗', microcopy: '🚨 Without a valid prescription, the Affirmative Defense does not apply, but we can still fight chemical tests.' }
             ]
         },
         {
             id: 'q5',
             stage: 5,
-            headline: 'Taken as prescribed?',
+            headline: 'Were you taking it as prescribed?',
             options: [
-                { text: 'Yes', score: 2, icon: '✓' },
-                { text: 'No', score: -3, icon: '✗' }
+                { text: 'Yes', score: 2, icon: '✓', microcopy: '✓ Demonstrates responsible use—strong defense component.' },
+                { text: 'No', score: -3, icon: '✗', microcopy: '⚠️ Deviating from prescription weakens the defense significantly.' }
             ]
         },
         {
             id: 'q6',
             stage: 6,
-            headline: 'Warned not to drive?',
+            headline: 'Were you warned not to drive?',
             options: [
-                { text: 'No', score: 2, icon: '✓' },
-                { text: 'Yes', score: 0, icon: '⚠️' },
-                { text: 'Not sure', score: 0, icon: '❓' }
+                { text: 'No', score: 2, icon: '✓', microcopy: '✓ Lack of warning strengthens your position—key defense element.' },
+                { text: 'Yes', score: 0, icon: '⚠️', microcopy: 'Warning present, but still defenses available under the law.' },
+                { text: 'Not sure', score: 0, icon: '❓', microcopy: 'Pharmacy records will clarify—no assumptions needed.' }
             ]
         },
         {
             id: 'q7',
             stage: 7,
-            headline: 'Field sobriety tests?',
+            headline: 'Did you perform field sobriety tests?',
             options: [
-                { text: 'Yes, completed them', score: 0, icon: '🚶' },
-                { text: 'Attempted but struggled', score: 0, icon: '😓' },
-                { text: 'Refused', score: 0, icon: '🚫' },
-                { text: 'Don\'t remember', score: 0, icon: '❓' }
+                { text: 'Yes, completed them', score: 0, icon: '🚶', microcopy: 'Performance can be challenged—often unreliable for medication.' },
+                { text: 'Attempted but struggled', score: 0, icon: '😓', microcopy: 'Medications affect balance and coordination—expected and defensible.' },
+                { text: 'Refused', score: 0, icon: '🚫', microcopy: '✓ Smart move—no evidence against you from these tests.' },
+                { text: 'Don\'t remember', score: 0, icon: '❓', microcopy: 'Likely impairment—we\'ll review dash cam for accuracy.' }
             ]
         },
         {
             id: 'q8',
             stage: 8,
-            headline: 'Alcohol involved?',
+            headline: 'Was any alcohol involved?',
             options: [
-                { text: 'No alcohol', score: 0, icon: '✓' },
-                { text: 'Yes, some alcohol', score: -3, icon: '🍷' },
-                { text: 'Not sure', score: 0, icon: '❓' }
+                { text: 'No alcohol', score: 0, icon: '✓', microcopy: '✓ Pure medication case—strongest possible scenario.' },
+                { text: 'Yes, some alcohol', score: -3, icon: '🍷', microcopy: '⚠️ Complicates the defense significantly—prosecution will emphasize this.' },
+                { text: 'Not sure', score: 0, icon: '❓', microcopy: 'Chemical tests will show exact BAC—transparency helps.' }
             ]
         },
         {
             id: 'q9',
             stage: 9,
-            headline: 'Chemical test?',
+            headline: 'What chemical test was given?',
             options: [
-                { text: 'Breath test', score: 1, icon: '💨' },
-                { text: 'Blood test', score: 1, icon: '🩸' },
-                { text: 'Urine test', score: 1, icon: '🧪' },
-                { text: 'Refused', score: 0, icon: '🚫' },
-                { text: 'Not sure', score: 0, icon: '❓' }
+                { text: 'Breath test', score: 1, icon: '💨', microcopy: 'Most common—but results can be challenged on technical grounds.' },
+                { text: 'Blood test', score: 1, icon: '🩸', microcopy: 'Most accurate—but chain of custody issues often exist.' },
+                { text: 'Urine test', score: 1, icon: '🧪', microcopy: 'Least reliable—many legal challenges available.' },
+                { text: 'Refused', score: 0, icon: '🚫', microcopy: '✓ Excellent position—license challenge route may be better.' },
+                { text: 'Not sure', score: 0, icon: '❓', microcopy: 'Police reports will specify—discovery process reveals all.' }
             ]
         },
         {
             id: 'q10',
             stage: 10,
-            headline: 'Driving record?',
+            headline: 'What\'s your driving record?',
             options: [
-                { text: 'Clean record', score: 0, icon: '✓' },
-                { text: 'Prior within 10 years', score: 0, icon: '⚠️' },
-                { text: 'Prior outside 10 years', score: 0, icon: '📅' },
-                { text: 'Not sure', score: 0, icon: '❓' }
+                { text: 'Clean record', score: 0, icon: '✓', microcopy: '✓ First offense—stronger negotiating position.' },
+                { text: 'Prior DWI within 10 years', score: 0, icon: '⚠️', microcopy: 'Enhances penalties if convicted—defense becomes even more critical.' },
+                { text: 'Prior DWI outside 10 years', score: 0, icon: '📅', microcopy: 'Old history—less relevant but may affect sentencing.' },
+                { text: 'Not sure', score: 0, icon: '❓', microcopy: 'We pull your full driving history during discovery.' }
             ]
         },
         {
             id: 'q11',
             stage: 11,
-            headline: 'Vehicle status?',
+            headline: 'What happened to your vehicle?',
             options: [
-                { text: 'Towed to impound', score: 0, icon: '🚗' },
-                { text: 'Plates taken (Whiskey Plates)', score: 0, icon: '🚫' },
-                { text: 'Someone drove it home', score: 0, icon: '🚗' }
+                { text: 'Towed to impound', score: 0, icon: '🚗', microcopy: 'Standard procedure—impound fees now your concern.' },
+                { text: 'Plates taken (Whiskey Plates)', score: 0, icon: '🚫', microcopy: 'Administrative suspension—separate from criminal case.' },
+                { text: 'Someone drove it home', score: 0, icon: '🚗', microcopy: 'Less common—verify what the police report actually says.' }
             ]
         },
         {
             id: 'q12',
             stage: 12,
-            headline: 'License notice timing?',
+            headline: 'When did you receive the notice?',
             options: [
-                { text: 'Less than 30 days', score: 0, icon: '🚨' },
-                { text: '30–60 days', score: 0, icon: '⏰' },
-                { text: 'More than 60 days', score: -3, icon: '❌' },
-                { text: 'Not sure', score: 0, icon: '❓' }
+                { text: 'Less than 30 days', score: 0, icon: '🚨', microcopy: '⏰ You\'re within the 60-day window—action required immediately.' },
+                { text: '30–60 days ago', score: 0, icon: '⏰', microcopy: '⏰ Still within the deadline but time is critical—act now.' },
+                { text: 'More than 60 days', score: -3, icon: '❌', microcopy: '🚨 The 60-day window has passed—license action likely final unless appeal filed.' },
+                { text: 'Not sure', score: 0, icon: '❓', microcopy: 'Check your paperwork immediately—deadline is non-negotiable.' }
             ]
         },
         {
             id: 'q13',
             stage: 13,
-            headline: 'Professional risk?',
+            headline: 'Does your profession require a clean record?',
             options: [
-                { text: 'Healthcare (Mayo Clinic, Nurse, Doctor)', score: 0, icon: '⚕️' },
-                { text: 'CDL / Commercial Driver', score: 0, icon: '🚛' },
-                { text: 'Government / Teacher', score: 0, icon: '👨‍🏫' },
-                { text: 'None', score: 0, icon: '✓' }
+                { text: 'Healthcare (Mayo Clinic, Nurse, Doctor)', score: 0, icon: '⚕️', microcopy: '🚨 High professional stakes—licensing board will be notified.' },
+                { text: 'CDL / Commercial Driver', score: 0, icon: '🚛', microcopy: '🚨 Federal implications—CDL suspension is automatic.' },
+                { text: 'Government / Teacher', score: 0, icon: '👨‍🏫', microcopy: '⚠️ Background check implications—career at risk.' },
+                { text: 'None', score: 0, icon: '✓', microcopy: '✓ Lower professional stakes—focus on minimizing criminal penalties.' }
             ]
         }
     ];
@@ -810,17 +1032,39 @@
         return { emoji: '🔴', label: 'High Legal Risk – Immediate Action Required', class: 'badge-red' };
     }
 
+    // Update Risk Panel
+    function updateRiskPanel() {
+        const riskInfo = calculateRiskLevel(score);
+        document.getElementById('risk-emoji').textContent = riskInfo.emoji;
+        document.getElementById('risk-label').textContent = riskInfo.label;
+        document.getElementById('risk-score').textContent = `Score: ${score}`;
+    }
+
+    // Update Journey Roadmap
+    function updateJourneyRoadmap() {
+        const roadmap = document.getElementById('roadmap');
+        let html = '';
+        for (let i = 1; i <= 13; i++) {
+            const completed = responses[`q${i}`] !== undefined;
+            const current = currentStep === i;
+            const classes = `roadmap-node ${completed ? 'completed' : ''} ${current ? 'current' : ''}`;
+            const icon = completed ? '✓' : i;
+            html += `<div class="${classes}"><div class="roadmap-dot">${icon}</div></div>`;
+        }
+        roadmap.innerHTML = html;
+    }
+
     // Render Start Screen
     function renderStartScreen() {
         const container = document.getElementById('stage-container');
         container.innerHTML = `
-            <div class="stage stage-entry active">
+            <div class="stage active">
                 <div class="stage-question-wrap">
                     <h1 class="stage-question" style="text-align: center; font-size: 28px;">I was arrested for a DWI, but I was taking my own prescription. Do I have a defense?</h1>
                     <p class="stage-subtitle" style="text-align: center;">Find out in 60 seconds if you have a legal defense under Minnesota law.</p>
                 </div>
-                <div class="card-grid grid-2col">
-                    <button class="answer-card" onclick="startQuiz()" style="grid-column: 1 / -1; margin: 0 auto; max-width: 400px;">
+                <div class="card-grid">
+                    <button class="answer-card" onclick="startQuiz()" style="margin: 0 auto; max-width: 400px;">
                         <div class="card-icon">🚀</div>
                         <div class="card-text">
                             <span class="card-label">Start Free Case Analysis</span>
@@ -831,6 +1075,8 @@
             </div>
         `;
         document.getElementById('progress-container').classList.remove('visible');
+        updateRiskPanel();
+        updateJourneyRoadmap();
     }
 
     // Start Quiz
@@ -858,7 +1104,7 @@
 
         question.options.forEach((option, index) => {
             html += `
-                <button class="answer-card" onclick="selectOption(${currentStep - 1}, ${index}, ${option.score})">
+                <button class="answer-card" onclick="selectOption(${currentStep - 1}, ${index}, ${option.score}, '${option.microcopy}')">
                     <div class="card-icon">${option.icon}</div>
                     <div class="card-text">
                         <span class="card-label">${option.text}</span>
@@ -877,10 +1123,11 @@
         container.innerHTML = html;
 
         document.getElementById('progress-container').classList.add('visible');
+        updateJourneyRoadmap();
     }
 
     // Select Option
-    function selectOption(questionIndex, optionIndex, scoreAdjustment) {
+    function selectOption(questionIndex, optionIndex, scoreAdjustment, microcopy) {
         const question = QUESTIONS[questionIndex];
         const option = question.options[optionIndex];
 
@@ -890,6 +1137,17 @@
         // Disable buttons
         document.querySelectorAll('.answer-card').forEach(btn => btn.disabled = true);
 
+        // Show microcopy if exists
+        const selectedCard = document.querySelectorAll('.answer-card')[optionIndex];
+        if (microcopy) {
+            const microcopyDiv = document.createElement('div');
+            microcopyDiv.className = 'microcopy';
+            microcopyDiv.textContent = microcopy;
+            selectedCard.appendChild(microcopyDiv);
+        }
+
+        updateRiskPanel();
+
         setTimeout(() => {
             if (currentStep < 13) {
                 currentStep++;
@@ -897,7 +1155,7 @@
             } else {
                 renderResults();
             }
-        }, 500);
+        }, 2500);
     }
 
     // Render Results
@@ -954,6 +1212,7 @@
         `;
 
         document.getElementById('stage-container').innerHTML = resultsHTML;
+        updateRiskPanel();
     }
 
     // Form Submit
@@ -962,7 +1221,7 @@
         const form = event.target;
         form.innerHTML = `
             <div style="text-align: center; padding: 32px; background: rgba(34, 197, 94, 0.1); border-radius: 12px; border: 2px solid #22c55e;">
-                <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 16px;">✓ Success!</h3>
+                <h3 style="font-size: 24px; font-weight: 800; margin-bottom: 16px; color: #121212;">✓ Success!</h3>
                 <p style="margin-bottom: 12px; color: #121212;">Your blueprint is on the way.</p>
                 <p style="font-weight: 700; color: #121212; margin-bottom: 16px;">Do not face this alone.</p>
                 <p style="color: #121212;">Call Tom and Peter at <a href="tel:507-625-5000" style="color: var(--brand-primary); font-weight: 700; text-decoration: none;">507-625-5000</a> right now to speak directly with an attorney.</p>
